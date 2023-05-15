@@ -1,0 +1,183 @@
+﻿@model UserIntraction.Models.UserModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+    <script src="/Scripts/jquery-1.7.1.min.js"></script>
+<script src="/Scripts/jquery.validate.min.js"></script>
+<script src="/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<h1>Create User</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div>
+            @*<div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input id="email" asp-for="Email" class="form-control" required /> 
+                <input type="button" value="Check email" class="btn btn-primary" onclick="checkEmail()" />
+                <label id="erremail" class="text-danger"></label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input id="firstName" asp-for="FirstName" class="form-control" required />
+                <label id="errfirstName" class="text-danger"></label>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input id="lastName" asp-for="LastName" class="form-control" required />
+                <label id="errlastName" class="text-danger"></label>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label"></label>
+                <input id="phone" asp-for="Phone" class="form-control" required />
+                <label id="errphone" class="text-danger"></label>
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input id="address" asp-for="Address" class="form-control" required />
+                <label id="erraddress" class="text-danger"></label>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                <input id="country" asp-for="Country" class="form-control" required />
+                <label id="errcountry" class="text-danger"></label>
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State" class="control-label"></label>
+                <input id="state" asp-for="State" class="form-control" required />
+                <label id="errstate" class="text-danger"></label>
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pincode" class="control-label"></label>
+                <input id="pincode" asp-for="Pincode" class="form-control" required />
+                <label id="errpincode" class="text-danger"></label>
+                <span asp-validation-for="Pincode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" onclick="SaveData()" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<script>
+    function checkEmail() {
+
+        let data =$("#email").val() 
+
+        if (data== "") {
+            $('#erremail').text("Enter valid email");
+            return false;
+        }
+
+        $.ajax({
+            url: "/User/ValidateEmail" ,
+            type: "POST",
+            data: { email: data },
+            success: function (response) {
+                console.log(response)
+                if (response.status == 0002)
+                    $('#erremail').text("Enter valid email");
+
+                if (response.status === 0000) {
+                    console.log("inside ")
+                    $('#firstName').val(response.data.firstName);
+                    $('#lastName').val(response.data.lastName);
+                    $('#phone').val(response.data.phone);
+                    $('#address').val(response.data.address);
+                    $('#country').val(response.data.country);
+                    $('#state').val(response.data.state);
+                    $('#pincode').val(response.data.pincode);
+                }
+                if (response.status === 0001) {
+                    $('#erremail').text("Email is available to create new user");
+                }
+            },
+            error: function (request, status, error) {
+                alert(" error from api :", request.responseText);
+            }
+        });
+    }
+    function SaveData() {
+        let FormValid = 0;
+        let formData = {
+            ID:0,
+            FirstName: $("#firstName").val(),
+            LastName: $("#lastName").val(),
+            Email: $("#email").val(),
+            Phone: $("#phone").val(),
+            Address: $("#address").val(),
+            Country: $("#country").val(),
+            State: $("#state").val(),
+            Pincode: parseInt($("#pincode").val())
+        }
+        //if (formData.FirstName == "") {
+        //    $('#errfirstName').text("Enter valid first name");
+        //    FormValid = 1;
+        //}
+        //if (formData.LastName == "") {
+        //    $('#errlastName').text("Enter valid last name");
+        //    FormValid = 1;
+        //}
+
+        //if (formData.Email == "") {
+        //    $('#erremail').text("Enter valid email");
+        //    FormValid = 1;
+        //}
+
+        //if (formData.Address == "") {
+        //    $('#erraddress').text("Enter valid address");
+        //    FormValid = 1;
+        //}
+
+        //if (formData.Country == "") {
+        //    $('#errcountry').text("Enter valid country");
+        //    FormValid = 1;
+        //}
+
+        //if (formData.State == "") {
+        //    $('#errstate').text("Enter valid state");
+        //    FormValid = 1;
+        //}
+        //if (formData.Pincode == "") {
+        //    $('#errpincode').text("Enter valid pincode");
+        //    FormValid = 1;
+        //}
+
+        //if (FormValid != 0) {
+        //    return false;
+        //}
+        console.log(formData)
+
+        $.ajax({
+                url: "/User/SaveUserData",
+                type: "POST",
+                data: formData,
+                success: function (response) {
+                    alert(response);
+                },
+                error: function (request, status, error) {
+                    alert(" error from api :", request.responseText);                    
+                }
+            });
+       
+}
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
